@@ -22,6 +22,27 @@ describe('ArticleInput', () => {
     fireEvent.click(submitButton);
 
     expect(mockOnSubmit).toHaveBeenCalledWith(testText);
-    expect(textarea).toHaveValue(''); // Check if textarea is cleared after submission
+    expect(textarea).toHaveValue('');
+  });
+
+  it('disables input and shows loading state when isLoading is true', () => {
+    render(<ArticleInput onSubmit={() => {}} isLoading={true} />);
+    
+    const textarea = screen.getByTestId('article-input');
+    const submitButton = screen.getByTestId('submit-button');
+
+    expect(textarea).toBeDisabled();
+    expect(submitButton).toBeDisabled();
+    expect(submitButton).toHaveTextContent('Generating...');
+  });
+
+  it('does not submit empty content', () => {
+    const mockOnSubmit = jest.fn();
+    render(<ArticleInput onSubmit={mockOnSubmit} />);
+
+    const submitButton = screen.getByTestId('submit-button');
+    fireEvent.click(submitButton);
+
+    expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 }); 

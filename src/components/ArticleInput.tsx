@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 
 interface ArticleInputProps {
   onSubmit: (text: string) => void;
+  isLoading?: boolean;
 }
 
-const ArticleInput: React.FC<ArticleInputProps> = ({ onSubmit }) => {
+const ArticleInput: React.FC<ArticleInputProps> = ({ onSubmit, isLoading = false }) => {
   const [text, setText] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!text.trim()) return;
     onSubmit(text);
-    setText(''); // Clear input after submission
+    setText('');
   };
 
   return (
@@ -18,16 +20,22 @@ const ArticleInput: React.FC<ArticleInputProps> = ({ onSubmit }) => {
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Enter your article text here..."
-        className="w-full p-2 border border-gray-300 rounded min-h-[200px]"
+        placeholder="Paste your article or content here..."
+        className="w-full p-4 border border-gray-300 rounded-lg min-h-[200px] focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         data-testid="article-input"
+        disabled={isLoading}
       />
       <button
         type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className={`px-6 py-3 rounded-lg font-medium text-white transition-colors
+          ${isLoading 
+            ? 'bg-gray-400 cursor-not-allowed' 
+            : 'bg-blue-500 hover:bg-blue-600'
+          }`}
         data-testid="submit-button"
+        disabled={isLoading}
       >
-        Submit
+        {isLoading ? 'Generating...' : 'Generate Tweets'}
       </button>
     </form>
   );
