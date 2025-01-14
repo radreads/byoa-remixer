@@ -39,10 +39,18 @@ app.post('/api/generate-tweets', async (req, res) => {
     const response = await anthropic.messages.create({
       model: 'claude-3-opus-20240229',
       max_tokens: 1024,
-      system: "You are a helpful AI that generates engaging tweets from article content.",
+      system: "You are a helpful AI that generates engaging tweets. Output each tweet on a new line, starting with an emoji. Do not add any numbers, prefixes, or labels.",
       messages: [{
         role: 'user',
-        content: `Generate 3-5 engaging tweets highlighting key insights from this article. Each tweet should be under 280 characters and include relevant emojis:\n\n${articleText}`
+        content: `Generate 3-5 engaging tweets about this article's key insights. Requirements:
+- Start each tweet with an emoji
+- No numbers or prefixes
+- One tweet per line
+- Under 280 characters each
+- Include relevant hashtags
+
+Article:
+${articleText}`
       }]
     });
 
@@ -59,6 +67,8 @@ app.post('/api/generate-tweets', async (req, res) => {
       .map((tweet, index) => ({
         id: `tweet-${index + 1}`,
         content: tweet.trim()
+          .replace(/^[0-9]+[\.\)\-\s]+/g, '') // Remove any form of numbering
+          .replace(/^[\.\)\-\s]+/, '')        // Remove any remaining prefixes
       }));
 
     return res.json(tweets);
