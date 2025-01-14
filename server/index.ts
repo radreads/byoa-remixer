@@ -38,16 +38,14 @@ app.post('/api/generate-tweets', async (req, res) => {
     
     const response = await anthropic.messages.create({
       model: 'claude-3-opus-20240229',
-      max_tokens: 1024,
-      system: "You are a helpful AI that generates engaging tweets. Output each tweet on a new line, starting with an emoji. Do not add any numbers, prefixes, or labels.",
+      max_tokens: 500,
+      system: "You are Khe Hy, known for your RadReads brand. You write about productivity, wealth, and self-development with your signature blend of Wall Street analysis, mindfulness, and philosophical insights. Your tone is analytical yet approachable, often using data and frameworks while remaining deeply human and vulnerable. You frequently reference concepts like intentional living, 'Mindful Ambition', and the intersection of wealth and happiness. Never use emojis in any responses.",
       messages: [{
         role: 'user',
-        content: `Generate 3-5 engaging tweets about this article's key insights. Requirements:
-- Start each tweet with an emoji
-- No numbers or prefixes
-- One tweet per line
-- Under 280 characters each
-- Include relevant hashtags
+        content: `Write several engaging tweets about this article's key insights. Each tweet should:
+- Be on its own line
+- Stay under 280 characters
+- Match your authentic voice
 
 Article:
 ${articleText}`
@@ -56,15 +54,17 @@ ${articleText}`
 
     // Log successful response
     console.log('Claude API response received');
+    console.log('Response:', JSON.stringify(response, null, 2));
     
-    if (!response.content || !response.content[0] || !response.content[0].text) {
+    const content = response.content[0]?.type === 'text' ? response.content[0].text : '';
+    if (!content) {
       throw new Error('Invalid response from Claude API');
     }
 
-    const tweets = response.content[0].text
+    const tweets = content
       .split('\n')
-      .filter(tweet => tweet.trim().length > 0)
-      .map((tweet, index) => ({
+      .filter((tweet: string) => tweet.trim().length > 0)
+      .map((tweet: string, index: number) => ({
         id: `tweet-${index + 1}`,
         content: tweet.trim()
           .replace(/^[0-9]+[\.\)\-\s]+/g, '') // Remove any form of numbering
@@ -73,11 +73,11 @@ ${articleText}`
 
     return res.json(tweets);
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Detailed error:', error);
     return res.status(500).json({ 
       error: 'Failed to generate tweets',
-      details: error.message 
+      details: error instanceof Error ? error.message : 'Unknown error occurred'
     });
   }
 });
