@@ -1,0 +1,3 @@
+I'm working on my next project. It's going to be a webpage/webapp that takes some content (blog post, article). You paste it into a window and then you push a button.
+
+Once you push it, it connects to the Claude API and gives a bunch of tweets that summarize or reframe interesting parts. You then have the option of saving the tweets into a database. Then you can always access the database and hit "Push to tweet." The tweet will be posted onto twitter/X and then it will be removed from the database. 
