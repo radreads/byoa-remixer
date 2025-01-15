@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LoadingSpinner from './icons/LoadingSpinner';
 
 interface ArticleInputProps {
   onSubmit: (text: string) => void;
@@ -27,7 +28,7 @@ const ArticleInput: React.FC<ArticleInputProps> = ({ onSubmit, isLoading = false
       />
       <button
         type="submit"
-        className={`px-6 py-3 rounded-lg font-medium text-white transition-colors
+        className={`px-6 py-3 rounded-lg font-medium text-white transition-colors flex items-center justify-center gap-2
           ${isLoading 
             ? 'bg-gray-400 cursor-not-allowed' 
             : 'bg-blue-500 hover:bg-blue-600'
@@ -35,7 +36,14 @@ const ArticleInput: React.FC<ArticleInputProps> = ({ onSubmit, isLoading = false
         data-testid="submit-button"
         disabled={isLoading}
       >
-        {isLoading ? 'Generating...' : 'Generate Tweets'}
+        {isLoading ? (
+          <>
+            <LoadingSpinner size={18} />
+            <span>Generating...</span>
+          </>
+        ) : (
+          'Generate Tweets'
+        )}
       </button>
     </form>
   );

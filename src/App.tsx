@@ -49,36 +49,39 @@ function App() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Remixer</h1>
-      <ArticleInput onSubmit={handleSubmit} isLoading={isLoading} />
-      {error && (
-        <div className="mt-6 p-4 bg-red-50 text-red-600 rounded-lg">
-          {error}
-        </div>
-      )}
-      {isLoading ? (
-        <div className="mt-6 text-center text-gray-600">
-          Generating tweets...
-        </div>
-      ) : (
-        tweets.length > 0 && (
-          <TweetList 
-            tweets={tweets} 
-            articleText={articleText} 
-            onSave={handleSaveTweet}
-            savedTweetIds={savedTweets.map(t => t.tweet_id)} 
-          />
-        )
-      )}
-      <SlidePanel 
-        isOpen={isPanelOpen} 
-        onClose={togglePanel}
-        savedTweets={savedTweets}
-        onRemove={removeTweet}
-        onEdit={handleEditSavedTweet}
-        isLoading={savedTweetsLoading}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto p-4 max-w-3xl">
+        <h1 className="text-3xl font-bold mb-6">Blog Post Remixer</h1>
+        <p className="text-gray-600 mb-6">Paste a blog post below to convert it into a series of Tweets in Khe Hy's voice.</p>
+        <ArticleInput onSubmit={handleSubmit} isLoading={isLoading} />
+        {error && (
+          <div className="mt-6 p-4 bg-red-50 text-red-600 rounded-lg">
+            {error}
+          </div>
+        )}
+        {isLoading ? (
+          <div className="mt-6 text-center text-gray-600">
+            Generating tweets...
+          </div>
+        ) : (
+          tweets.length > 0 && (
+            <TweetList 
+              tweets={tweets} 
+              articleText={articleText} 
+              onSave={handleSaveTweet}
+              savedTweetIds={savedTweets.map(t => t.tweet_id)} 
+            />
+          )
+        )}
+        <SlidePanel 
+          isOpen={isPanelOpen} 
+          onClose={togglePanel}
+          savedTweets={savedTweets}
+          onRemove={removeTweet}
+          onEdit={handleEditSavedTweet}
+          isLoading={savedTweetsLoading}
+        />
+      </div>
     </div>
   );
 }
