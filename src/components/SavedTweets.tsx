@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSavedTweets, SavedTweet } from '../hooks/useSavedTweets';
+import { useSavedTweets } from '../hooks/useSavedTweets';
 
 const SavedTweets: React.FC = () => {
-  const { savedTweets, removeTweet } = useSavedTweets();
+  const { savedTweets, removeTweet, loading, error } = useSavedTweets();
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -13,6 +13,22 @@ const SavedTweets: React.FC = () => {
       minute: '2-digit'
     });
   };
+
+  if (loading) {
+    return (
+      <div className="mt-6 p-4 border border-gray-200 rounded-lg text-center text-gray-500">
+        Loading saved tweets...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-6 p-4 border border-red-200 bg-red-50 rounded-lg text-center text-red-600">
+        Error: {error}
+      </div>
+    );
+  }
 
   if (savedTweets.length === 0) {
     return (
@@ -33,7 +49,7 @@ const SavedTweets: React.FC = () => {
           >
             <p className="mb-2">{tweet.content}</p>
             <div className="flex justify-between items-center text-sm text-gray-500">
-              <span>{formatDate(tweet.savedAt)}</span>
+              <span>{formatDate(tweet.saved_at)}</span>
               <button
                 onClick={() => removeTweet(tweet.id)}
                 className="px-3 py-1 text-sm text-red-500 hover:text-red-600 transition-colors"

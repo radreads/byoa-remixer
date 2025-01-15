@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSavedTweets, SavedTweet } from '../hooks/useSavedTweets';
+import { useSavedTweets } from '../hooks/useSavedTweets';
 
 interface Tweet {
   id: string;
@@ -24,6 +24,8 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, articleText }) => {
   };
 
   const handleSaveTweet = (tweet: Tweet) => {
+    console.log('Handling save tweet:', tweet);
+    console.log('Article context:', articleText);
     saveTweet({
       ...tweet,
       articleContext: articleText
@@ -31,7 +33,9 @@ const TweetList: React.FC<TweetListProps> = ({ tweets, articleText }) => {
   };
 
   const isTweetSaved = (id: string) => {
-    return savedTweets.some(tweet => tweet.id === id);
+    const saved = savedTweets.some(tweet => tweet.tweet_id === id);
+    console.log('Checking if tweet is saved:', id, saved);
+    return saved;
   };
 
   return (
