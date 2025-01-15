@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ArticleInput from './components/ArticleInput'
 import TweetList from './components/TweetList'
+import SavedTweets from './components/SavedTweets'
 import { generateTweets } from './services/claude'
 
 // Add this temporarily to check if API key is loaded
@@ -8,12 +9,14 @@ console.log('API Key exists:', !!import.meta.env.VITE_ANTHROPIC_API_KEY);
 
 function App() {
   const [tweets, setTweets] = useState<Array<{ id: string; content: string }>>([]);
+  const [articleText, setArticleText] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (text: string) => {
     setIsLoading(true);
     setError(null);
+    setArticleText(text);
     try {
       const generatedTweets = await generateTweets(text);
       setTweets(generatedTweets);
@@ -39,8 +42,9 @@ function App() {
           Generating tweets...
         </div>
       ) : (
-        tweets.length > 0 && <TweetList tweets={tweets} />
+        tweets.length > 0 && <TweetList tweets={tweets} articleText={articleText} />
       )}
+      <SavedTweets />
     </div>
   );
 }

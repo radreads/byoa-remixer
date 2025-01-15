@@ -65,7 +65,7 @@ ${articleText}`
       .split('\n')
       .filter((tweet: string) => tweet.trim().length > 0)
       .map((tweet: string, index: number) => ({
-        id: `tweet-${index + 1}`,
+        id: `tweet-${Date.now()}-${index + 1}`,
         content: tweet.trim()
           .replace(/^[0-9]+[\.\)\-\s]+/g, '') // Remove any form of numbering
           .replace(/^[\.\)\-\s]+/, '')        // Remove any remaining prefixes
