@@ -1,5 +1,6 @@
-import React from 'react';
-import { useSavedTweets } from '../hooks/useSavedTweets';
+import React, { useState } from 'react';
+import EditableTweet from './EditableTweet';
+import { TwitterIcon } from './icons/TwitterIcon';
 
 interface Tweet {
   id: string;
@@ -9,64 +10,63 @@ interface Tweet {
 interface TweetListProps {
   tweets: Tweet[];
   articleText?: string;
+  onSave: (tweet: Tweet) => void;
+  savedTweetIds: string[];
 }
 
-const TweetList: React.FC<TweetListProps> = ({ tweets, articleText }) => {
-  const { savedTweets, saveTweet } = useSavedTweets();
+const TweetList: React.FC<TweetListProps> = ({ tweets, articleText, onSave, savedTweetIds }) => {
+  const [localTweets, setLocalTweets] = useState<Tweet[]>(tweets);
 
-  const copyToClipboard = async (text: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      console.log('Tweet copied!');
-    } catch (err) {
-      console.error('Failed to copy text:', err);
-    }
+  const shareToTwitter = (text: string) => {
+    const encodedText = encodeURIComponent(text);
+    window.open(`https://twitter.com/intent/tweet?text=${encodedText}`, '_blank');
   };
 
-  const handleSaveTweet = (tweet: Tweet) => {
-    console.log('Handling save tweet:', tweet);
-    console.log('Article context:', articleText);
-    saveTweet({
-      ...tweet,
-      articleContext: articleText
-    });
+  const handleSaveTweet = async (tweet: Tweet) => {
+    onSave(tweet);
+    setLocalTweets(current => current.filter(t => t.id !== tweet.id));
   };
 
-  const isTweetSaved = (id: string) => {
-    const saved = savedTweets.some(tweet => tweet.tweet_id === id);
-    console.log('Checking if tweet is saved:', id, saved);
-    return saved;
+  const handleEditTweet = (tweetId: string, newContent: string) => {
+    setLocalTweets(current =>
+      current.map(t => t.id === tweetId ? { ...t, content: newContent } : t)
+    );
   };
 
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold mb-4">Generated Tweets</h2>
       <div className="space-y-4">
-        {tweets.map((tweet) => (
+        {localTweets.map((tweet) => (
           <div 
             key={tweet.id} 
             className="p-4 border border-gray-200 rounded-lg shadow hover:shadow-md transition-shadow"
           >
-            <p className="mb-3">{tweet.content}</p>
+            <EditableTweet
+              content={tweet.content}
+              onSave={(newContent) => handleEditTweet(tweet.id, newContent)}
+              className="mb-3"
+            />
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => copyToClipboard(tweet.content)}
-                className="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                aria-label="Copy tweet"
+                onClick={() => shareToTwitter(tweet.content)}
+                className="relative p-2 rounded-full hover:bg-blue-50 transition-all duration-300 group active:scale-90"
+                aria-label="Share on Twitter"
+                title="Share on Twitter"
               >
-                Copy
+                <TwitterIcon 
+                  className="group-hover:fill-[#1DA1F2] group-active:rotate-[360deg] transition-all duration-300" 
+                  color="#536471" 
+                />
+                <span className="absolute inset-0 rounded-full group-active:animate-ripple bg-blue-100/50" />
               </button>
               <button
                 onClick={() => handleSaveTweet(tweet)}
-                disabled={isTweetSaved(tweet.id)}
-                className={`px-3 py-1 text-sm rounded transition-colors ${
-                  isTweetSaved(tweet.id)
-                    ? 'bg-gray-300 cursor-not-allowed'
-                    : 'bg-green-500 hover:bg-green-600 text-white'
-                }`}
+                className="px-3 py-1 text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors"
                 aria-label="Save tweet"
+                disabled={savedTweetIds.includes(tweet.id)}
               >
-                {isTweetSaved(tweet.id) ? 'Saved' : 'Save'}
+                {savedTweetIds.includes(tweet.id) ? 'Saved' : 'Save'}
               </button>
             </div>
           </div>

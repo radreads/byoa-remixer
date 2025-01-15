@@ -1,8 +1,14 @@
 import React from 'react';
 import { useSavedTweets } from '../hooks/useSavedTweets';
+import { TwitterIcon } from './icons/TwitterIcon';
 
 const SavedTweets: React.FC = () => {
   const { savedTweets, removeTweet, loading, error } = useSavedTweets();
+
+  const shareToTwitter = (content: string) => {
+    const tweetText = encodeURIComponent(content);
+    window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+  };
 
   if (loading) {
     return (
@@ -38,7 +44,17 @@ const SavedTweets: React.FC = () => {
             className="p-4 border border-gray-200 rounded-lg shadow hover:shadow-md transition-shadow"
           >
             <p className="mb-2">{tweet.content}</p>
-            <div className="flex justify-end">
+            <div className="flex justify-end items-center space-x-2">
+              <button
+                onClick={() => shareToTwitter(tweet.content)}
+                className="group relative flex items-center justify-center p-2 rounded-full hover:bg-blue-50 transition-colors"
+                aria-label="Share on Twitter"
+              >
+                <TwitterIcon 
+                  className="w-5 h-5 text-gray-500 group-hover:text-[#1DA1F2] active:scale-90 group-active:rotate-[360deg] transition-all duration-300" 
+                />
+                <span className="absolute inset-0 rounded-full group-active:animate-ripple bg-blue-100/50" />
+              </button>
               <button
                 onClick={() => removeTweet(tweet.id)}
                 className="px-3 py-1 text-sm text-red-500 hover:text-red-600 transition-colors"
